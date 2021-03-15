@@ -1,0 +1,29 @@
+- name: Partition disk/filesystem/mount
+  hosts: 172.16.120.161
+  gather_facts: no
+  become: true
+  tasks:
+    - name: Partion loop0 P1
+      parted:
+        device: /dev/loop0
+        part_start: 0%
+        part_end: 50%
+        number: 1
+        state: present
+    - name: Create XFS filesystem on P1
+      filesystem:
+        dev: /dev/loop0p1
+        fstype: xfs
+    - name: Create mount point
+      file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - /data
+        - /data/p1
+    - name: Mount P1 to /data/p1
+      mount:
+        path: /data/p1
+        src: /dev/loop0p1
+        fstype: xfs
+        state: mounted

@@ -1,0 +1,7 @@
+[bionic]
+172.16.120.188
+[centos]
+172.16.120.161
+172.16.120.185
+[ubuntu:children]
+bionic

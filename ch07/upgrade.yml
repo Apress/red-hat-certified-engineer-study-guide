@@ -1,0 +1,19 @@
+---
+- name: Upgrade Systems
+  hosts: all
+  become: true
+  gather_facts: true
+  vars:
+    - ubuntu_version: "Ubuntu 18.04.5 LTS"
+    - centos_version: "8.2"
+  tasks:
+    - name: Upgrade Older Systems
+      package:
+        name: "*"
+        state: latest
+      when: >
+        (ansible_distribution == "CentOS" and
+        ansible_distribution_version != centos_version) or
+        (ansible_distribution == "Ubuntu" and
+        ansible_lsb.description != ubuntu_version)
+...

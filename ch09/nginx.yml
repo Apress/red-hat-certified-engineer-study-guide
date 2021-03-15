@@ -1,0 +1,15 @@
+---
+- name: Manage masking of NGINX
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Collect service list
+      service_facts:
+    - name: Mask Nginx
+      systemd:
+        name: nginx
+        masked: true
+        state: stopped
+      when: "'nginx.service' in ansible_facts.services"
+...

@@ -1,0 +1,24 @@
+---
+- name: Manage SSHD
+  hosts: all
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Ensure SSHD Started and Enabled
+      service:
+        name: sshd
+        enabled: true
+        state: started
+    - name: Edit SSHD Config
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PermitRootLogin '
+        insertafter: '#PermitRootLogin'
+        line: 'PermitRootLogin no '
+      notify: restart_sshd
+  handlers:
+    - name: restart_sshd
+      service:
+        name: sshd
+        state: restarted
+...

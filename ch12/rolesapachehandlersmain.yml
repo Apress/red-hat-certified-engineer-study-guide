@@ -1,0 +1,6 @@
+---
+- name: restart_apache
+  service:
+    name: "{{ apache_pkg }}"
+    state: restarted
+...

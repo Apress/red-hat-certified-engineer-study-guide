@@ -1,0 +1,13 @@
+---
+- name: Manage SSHD
+  hosts: all
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Edit SSHD Config
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^PermitRootLogin '
+        insertafter: '#PermitRootLogin'
+        line: 'PermitRootLogin no'
+...

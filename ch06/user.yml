@@ -1,0 +1,21 @@
+---
+- name: Manage User Account
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Create User
+      user:
+        name: "{{ user_name }}"
+        shell: /bin/bash
+        state: present
+        password: "{{ 'Password1' | password_hash('sha512') }}"
+        update_password: on_create
+      when: user_create == 'yes'
+    - name: Delete User
+      user:
+        name: "{{ user_name }}"
+        state: absent
+        remove:  true
+      when: user_create == 'no'
+...

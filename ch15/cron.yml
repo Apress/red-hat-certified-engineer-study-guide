@@ -1,0 +1,15 @@
+---
+- name: Manage Cron Entries
+  hosts: all
+  gather_facts: false
+  become: true
+  tasks:
+    - name: Backup user database
+      cron:
+        name: Backup Users
+        hour: 5
+        minute: 30
+        weekday: 1-5
+        user: root
+        job: 'tar -czf /root/user.tgz /etc/passwd /etc/shadow'
+        cron_file: user_backup

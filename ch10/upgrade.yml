@@ -1,0 +1,19 @@
+---
+- name: Upgrade Systems
+  hosts: all
+  become: true
+  gather_facts: true
+  tasks:
+    - name: read the variables file
+      include_vars:
+        file: version.yml
+    - name: Upgrade Older Systems
+      package:
+        name: "*"
+        state: latest
+      when: >
+        (ansible_distribution == "CentOS" and
+        ansible_distribution_version != centos_version) or
+        (ansible_distribution == "Ubuntu" and
+        ansible_lsb.description != ubuntu_version)
+...

@@ -1,0 +1,41 @@
+---
+- name: Manage User Account
+  hosts: "172.16.120.161"
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Update User
+      user:
+        name: "{{ user_name }}"
+        state: present
+        generate_ssh_key: true
+    - name: Password-less access for operator
+      copy:
+        src: tux
+        dest: /etc/sudoers.d/tux
+- name: Manage Dedicated Ansible Account
+  hosts: all
+  become: true
+  gather_facts: false
+  remote_user: tux
+  tasks:
+    - name: Create Ansible Account
+      user:
+        name: ansible
+        state: present
+        groups: "{{ admin_group }}"
+        password: "{{ 'Password1' | password_hash('sha512') }}"
+        update_password: on_create
+        comment: Dedicated Ansible Devops Account
+        shell: /bin/bash
+    - name: Install Local User Key
+      authorized_key:
+        user: ansible
+        state: present
+        manage_dir: true
+        key: "{{ lookup('file', '/home/tux/.ssh/id_rsa.pub') }}"
+    - name: Password-less access for ansible account
+      copy:
+        src: ansible
+        dest: /etc/sudoers.d/ansible
+...

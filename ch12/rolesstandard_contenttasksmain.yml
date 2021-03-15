@@ -1,0 +1,10 @@
+---
+- name: Copy web content
+  copy:
+    src: web/
+    directory_mode: true
+    dest: /var/www/html
+- name: Custom web content
+  template:
+    src: server.j2
+    dest: /var/www/html/server.html

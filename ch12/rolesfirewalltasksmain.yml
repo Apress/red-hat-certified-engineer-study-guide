@@ -1,0 +1,31 @@
+---
+- name: Firewall Package
+  package:
+    name: "{{ firewall_pkg }}"
+    state: present
+- name: Firewall Service
+  service:
+    name: "{{ firewall_pkg }}"
+    enabled: true
+    state: started
+- name: UFW Ubuntu
+  ufw:
+      state: enabled
+      policy: deny
+      rule: allow
+      port: "{{ item }}"
+  loop:
+    - "{{ service_name }}"
+    - "ssh"
+  when: ansible_distribution == "Ubuntu"
+- name: Firewalld CentOS
+  firewalld:
+    service: "{{ item }}"
+    permanent: true
+    immediate: true
+    state: enabled
+  loop:
+    - "{{ service_name }}"
+    - "ssh"
+  when: ansible_distribution == "CentOS"
+...

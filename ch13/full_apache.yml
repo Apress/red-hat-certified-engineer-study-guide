@@ -1,0 +1,38 @@
+---
+- name: Manage Apache Deployment
+  hosts: all
+  become: true
+  gather_facts: true
+  vars:
+    - service_name: http
+    - php_enable_webserver: true
+  vars_files:
+    - vars/main.yml
+  roles:
+    - apache
+    - firewall
+    - standard_web
+    - geerlingguy.php
+    - geerlingguy.mysql
+  tasks:
+    - name: add php page
+      copy:
+        dest: /var/www/html/test.php
+        content: "<?php phpinfo(); ?>"
+    - name: Install mysql-php
+      package:
+        name: "{{ php_mysql }}"
+      notify: restart webserver
+    - name: Add Apache PHP and Enable on Ubuntu
+      block:
+        - name: Install Apache PHP Module
+          apt:
+            name: libapache2-mod-php
+            state: present
+          notify: restart webserver
+        - name: Enable PHP Module
+          apache2_module:
+            state: present
+            name: php7.2
+          notify: restart web server
+      when: ansible_distribution == "Ubuntu"

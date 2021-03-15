@@ -1,0 +1,4 @@
+Welcome to {{ ansible_hostname }}
+The system uses: 
+{{ ansible_distribution }} {{ ansible_distribution_version }}
+The IP Address is: {{ ansible_default_ipv4.address }}

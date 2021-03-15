@@ -1,0 +1,11 @@
+---
+- name: Install Apache
+  hosts: all
+  become: true
+  gather_facts: false
+  tasks:
+    - name:  Install Apache Package
+      package:
+        name: "{{ apache_pkg }}"
+        state: present
+...

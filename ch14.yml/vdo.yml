@@ -1,0 +1,41 @@
+---
+- name: Managing VDO in Ansible
+  hosts: 172.16.120.161
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Install VDO
+      package:
+        name:
+          - vdo
+          - kmod-kvdo
+        state: latest
+    - name: Start VDO service
+      service:
+        name: vdo
+        enabled: true
+        state: started
+    - name: Create VDO device
+      vdo:
+        name: vdo1
+        state: present
+        device: /dev/loop1
+        logicalsize: 10G
+    - name: Format VDO device
+      filesystem:
+        type: xfs
+        dev: /dev/mapper/vdo1
+    - name: Create Mount Point
+      file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - /data
+        - /data/vdo
+    - name: Mount VDO filesystem
+      mount:
+        path: /data/vdo
+        fstype: xfs
+        state: mounted
+        src: /dev/mapper/vdo1
+        opts: defaults,x-systemd.requires=vdo.service

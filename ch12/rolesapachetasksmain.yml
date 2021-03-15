@@ -1,0 +1,42 @@
+---
+- name:  Install Apache Package
+  package:
+    name: "{{ apache_pkg }}"
+    state: present
+- name: Start and Enable Apache Service
+  service:
+    name: "{{ apache_pkg }}"
+    state: started
+    enabled: true
+- name: Configure Apache
+  lineinfile:
+    path: "{{ apache_cfg }}"
+    line: "ServerName {{ ansible_hostname }}"
+    insertafter: "#ServerName"
+  notify:
+    - restart_apache
+- name: Secure default ACL for apache user on document root
+  acl:
+    path: /var/www/html
+    entity: "{{ apache_user }}"
+    etype: user
+    state: present
+    permissions: rx
+    default: true
+- name: Secure default ACL for others on document root
+  acl:
+    path: /var/www/html
+    entry: default:others::---
+    state: present
+- name: Set read and execute permissions on deocument root for apache user
+  acl:
+    path: /var/www/html
+    entity: "{{ apache_user }}"
+    etype: user
+    state: present
+    permissions: rx
+- name: Set permissions to others to nothing on document root
+  acl:
+    path: /var/www/html
+    entry: others::---
+    state: present

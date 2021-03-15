@@ -1,0 +1,22 @@
+---
+- name: Update and reboot
+  hosts: 172.16.120.185
+  gather_facts: no
+  become: true
+  tasks:
+    - name: Update all packages
+      package:
+        name: '*'
+        state: latest
+      notify: reboot
+    - name: run handlers now
+      meta: flush_handlers
+    - name: Collect Kernel
+      shell: "uname -r"
+      register: kernel_version
+    - name: Show Kernel
+      debug:
+        msg: "The kernel is: {{ kernel_version.stdout }}"
+  handlers:
+    - name: reboot
+      reboot:

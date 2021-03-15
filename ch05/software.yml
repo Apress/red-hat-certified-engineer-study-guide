@@ -1,0 +1,17 @@
+---
+- name: My first play
+  hosts: all
+  become: true
+  tasks:
+          - name: Install software
+            package:
+                    name:
+                            - bash-completion
+                            - vim
+                            - tree
+                            - nano	
+                    state: present
+          - name: Show hostname
+            debug:
+                    msg: "This host is {{ ansible_hostname }}"
+...

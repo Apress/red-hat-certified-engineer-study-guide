@@ -1,0 +1,41 @@
+---
+- name: Using LVMs
+  hosts: 172.16.120.161
+  gather_facts: no
+  become: true
+  tasks:
+    - name: Partion loop0 P2
+      parted:
+        device: /dev/loop0
+        part_start: 50%
+        part_end: 100%
+        number: 2
+        flags: [ lvm ]
+        state: present
+    - name: Create Volume Group
+      lvg:
+        vg: vg1
+        pvs: /dev/loop0p2
+    - name: Create LV
+      lvol:
+        lv: lv1
+        vg: vg1
+        size: 100%FREE
+        shrink: false
+    - name: Create XFS filesystem on lv1
+      filesystem:
+        dev: /dev/vg1/lv1
+        fstype: xfs
+    - name: Create mount point
+      file:
+        path: "{{ item }}"
+        state: directory
+      loop:
+        - /data
+        - /data/lv1
+    - name: Mount lv1 to /data/lv1
+      mount:
+        path: /data/lv1
+        src: /dev/vg1/lv1
+        fstype: xfs
+        state: mounted
